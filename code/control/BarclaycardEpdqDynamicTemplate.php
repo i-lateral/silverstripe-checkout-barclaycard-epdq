@@ -13,7 +13,7 @@ class BarclaycardEpdqDynamicTemplate extends Controller {
             ->customise(array(
                 "Config" => $config,
                 "Title" => _t("BarclaycardEpdq.TemplateTitle", "Pay for your order via Barclays"),
-                "MetaTitle" => _t("BarclaycardEpdq.TemplateTitle", "Pay via Barclays"),
+                "MetaTitle" => _t("BarclaycardEpdq.TemplateTitle", "Pay via Barclays")
             ))->renderWith("BarclaycardEpdqDynamicTemplate");
     }
 }

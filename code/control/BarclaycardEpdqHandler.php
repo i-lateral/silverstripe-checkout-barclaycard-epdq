@@ -63,7 +63,7 @@ class BarclaycardEpdqHandler extends PaymentHandler {
             "OWNERADDRESS"  => $order->Address1,
             "OWNERTOWN"     => $order->City,
             "OWNERZIP"      => $order->PostCode,
-            "OWNERCTY"      => $order->Country
+            "OWNERCTY"      => $order->Country,
             
             // Customisation options
             "TITLE"         => $site->Title,
