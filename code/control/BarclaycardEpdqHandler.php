@@ -151,10 +151,10 @@ class BarclaycardEpdqHandler extends PaymentHandler {
         if(
             isset($data) && // Data and order are set
             array_key_exists('STATUS', $data) &&
-            array_key_exists('ORDERID', $data) &&
+            array_key_exists('orderID', $data) &&
             array_key_exists('PAYID', $data)
         ) {
-            $order_id = $data['ORDERID'];
+            $order_id = $data['orderID'];
             $payment_id = $data['PAYID'];
             
             switch($data['STATUS']){
