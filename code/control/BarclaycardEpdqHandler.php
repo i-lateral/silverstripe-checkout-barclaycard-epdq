@@ -24,11 +24,17 @@ class BarclaycardEpdqHandler extends PaymentHandler {
         else
             $gateway_url = "https://payments.epdq.co.uk/ncol/prod/orderstandard.asp";
 
-        $callback_url = Controller::join_links(
+        $success_url = Controller::join_links(
             Director::absoluteBaseURL(),
             Payment_Controller::config()->url_segment,
-            "callback",
-            $this->payment_gateway->ID
+            'complete'
+        );
+
+        $error_url = Controller::join_links(
+            Director::absoluteBaseURL(),
+            Payment_Controller::config()->url_segment,
+            'complete',
+            'error'
         );
 
         $back_url = Controller::join_links(
@@ -37,39 +43,50 @@ class BarclaycardEpdqHandler extends PaymentHandler {
             "finish"
         );
         
+        $template_url = Controller::join_links(
+            Director::absoluteBaseURL(),
+            "BarclaycardEpdqDynamicTemplate"
+        );
+        
         // Get an array of details, so we can generate a hash and convert
         // to hidden fields
         $data = array(
-            "PSPID"     => $this->payment_gateway->PSPID,
+            "PSPID"         => $this->payment_gateway->PSPID,
             
             // Order Details
-            "ORDERID"   => $order->OrderNumber,
-            "AMOUNT"    => round($cart->TotalCost * 100), // Format price as pence
-            "CURRENCY"  => Checkout::config()->currency_code,
-            "LANGUAGE"  => i18n::get_locale(),
-            "CN"        => $order->FirstName . " " . $order->Surname,
-            "EMAIL"     => $order->Email,
-            "OWNERADDRESS" => $order->Address1,
-            "OWNERTOWN" => $order->City,
-            "OWNERZIP" => $order->PostCode,
-            "OWNERCTY" => $order->Country,
-            "OWNERTELNO" => $order->PhoneNumber,
+            "ORDERID"       => $order->OrderNumber,
+            "AMOUNT"        => round($cart->TotalCost * 100), // Format price as pence
+            "CURRENCY"      => Checkout::config()->currency_code,
+            "LANGUAGE"      => i18n::get_locale(),
+            "CN"            => $order->FirstName . " " . $order->Surname,
+            "EMAIL"         => $order->Email,
+            "OWNERADDRESS"  => $order->Address1,
+            "OWNERTOWN"     => $order->City,
+            "OWNERZIP"      => $order->PostCode,
+            "OWNERCTY"      => $order->Country
             
             // Customisation options
-            "TITLE" => $site->Title,
-            "BGCOLOR" => $this->payment_gateway->Background,
-            "TXTCOLOR" => $this->payment_gateway->Text,
-            "TBLBGCOLOR" => $this->payment_gateway->TableBackground,
-            "TBLTXTCOLOR" => $this->payment_gateway->TableText,
+            "TITLE"         => $site->Title,
+            "BGCOLOR"       => $this->payment_gateway->Background,
+            "TXTCOLOR"      => $this->payment_gateway->Text,
+            "TBLBGCOLOR"    => $this->payment_gateway->TableBackground,
+            "TBLTXTCOLOR"   => $this->payment_gateway->TableText,
             "BUTTONBGCOLOR" => $this->payment_gateway->ButtonBackground,
-            "BUTTONTXTCOLOR" => $this->payment_gateway->ButtonText,
+            "BUTTONTXTCOLOR"=> $this->payment_gateway->ButtonText,
             
             // Callback URLs
-            "ACCEPTURL" => $callback_url,
-            "DECLINEURL" => $callback_url,
-            "EXCEPTIONURL" => $callback_url,
-            "CANCELURL" => $callback_url
+            "ACCEPTURL"     => $success_url,
+            "DECLINEURL"    => $error_url,
+            "EXCEPTIONURL"  => $error_url,
+            "CANCELURL"     => $error_url,
+            
+            // Custom Template
+            "TP"            => $template_url
         );
+        
+        // Account for the fact the phone number might not be set
+        if($order->PhoneNumber)
+            $data["OWNERTELNO"] = $order->PhoneNumber;
 
         $fields = FieldList::create();
         
@@ -130,19 +147,6 @@ class BarclaycardEpdqHandler extends PaymentHandler {
         $order_id = 0;
         $payment_id = 0;
 
-        $success_url = Controller::join_links(
-            Director::absoluteBaseURL(),
-            Payment_Controller::config()->url_segment,
-            'complete'
-        );
-
-        $error_url = Controller::join_links(
-            Director::absoluteBaseURL(),
-            Payment_Controller::config()->url_segment,
-            'complete',
-            'error'
-        );
-
         // Check if CallBack data exists and install id matches the saved ID
         if(
             isset($data) && // Data and order are set
@@ -202,10 +206,7 @@ class BarclaycardEpdqHandler extends PaymentHandler {
         
         $this->extend('onAfterCallback');
         
-        if($status == "paid" || $status == "pending")
-            return $this->redirect($success_url);
-        else
-            return $this->redirect($error_url);
+        return;
     }
 
 }
