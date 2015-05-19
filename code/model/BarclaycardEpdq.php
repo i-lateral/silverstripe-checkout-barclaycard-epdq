@@ -45,7 +45,7 @@ class BarclaycardEpdq extends PaymentMethod {
     public $Icon = '';
 
     private static $db = array(
-        "PSPID"           => "Varchar(10)",
+        "PSPID"           => "Varchar(15)",
         "SHA"             => "Varchar(255)",
         // Theme customisations
         "Background"      => "Varchar(7)",
