@@ -1,0 +1,13 @@
+en:
+  BarclaycardEpdq:
+    PLURALNAME: 'Barclaycard Epdqs'
+    SINGULARNAME: 'Barclaycard Epdq'
+    TemplateTitle: 'Pay via Barclays'
+  BarclaysEpqd:
+    ColourCustomisations: 'Colour Customisations'
+    PSPIDDescription: 'Merchant ID with Barclays'
+    SHADescription: 'Secure SHA Passcode'
+  Checkout:
+    Back: Back
+    ConfirmPay: 'Confirm and Pay'
+    Summary: Summary
