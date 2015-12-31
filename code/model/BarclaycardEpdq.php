@@ -1,6 +1,7 @@
 <?php
 
-class BarclaycardEpdq extends PaymentMethod {
+class BarclaycardEpdq extends PaymentMethod
+{
     
     /**
      * Default background colour for payment pages
@@ -30,7 +31,7 @@ class BarclaycardEpdq extends PaymentMethod {
      * Default button background colour for payment pages
      * @config
      */
-    private static $default_button_background = "#4A82BB"; 
+    private static $default_button_background = "#4A82BB";
     
     /**
      * Default button text colour for payment pages
@@ -56,10 +57,11 @@ class BarclaycardEpdq extends PaymentMethod {
         "ButtonText"      => "Varchar(7)"
     );
 
-    public function getCMSFields() {
+    public function getCMSFields()
+    {
         $fields = parent::getCMSFields();
 
-        if($this->ID) {
+        if ($this->ID) {
             $fields->addFieldsToTab(
                 "Root.Main",
                 array(
@@ -82,7 +84,8 @@ class BarclaycardEpdq extends PaymentMethod {
         return $fields;
     }
 
-    public function onBeforeWrite() {
+    public function onBeforeWrite()
+    {
         parent::onBeforeWrite();
         
         $config = $this->config();
@@ -99,5 +102,4 @@ class BarclaycardEpdq extends PaymentMethod {
 
         $this->Summary = (!$this->Summary) ? "Pay with credit/debit card securely via Barclays" : $this->Summary;
     }
-    
 }
