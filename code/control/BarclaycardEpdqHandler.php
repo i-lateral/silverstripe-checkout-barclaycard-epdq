@@ -5,10 +5,11 @@
  * 
  * @author ilateral (http://www.ilateral.co.uk)
  */
-class BarclaycardEpdqHandler extends PaymentHandler {
+class BarclaycardEpdqHandler extends PaymentHandler
+{
 
-    public function index($request) {
-        
+    public function index($request)
+    {
         $this->extend('onBeforeIndex');
         
         // Setup payment gateway form
@@ -19,10 +20,11 @@ class BarclaycardEpdqHandler extends PaymentHandler {
         $sha_data = "";
         
         // Setup the gateway URL
-        if(Director::isDev())
+        if (Director::isDev()) {
             $gateway_url = "https://mdepayments.epdq.co.uk/ncol/test/orderstandard.asp";
-        else
+        } else {
             $gateway_url = "https://payments.epdq.co.uk/ncol/prod/orderstandard.asp";
+        }
 
         $success_url = Controller::join_links(
             Director::absoluteBaseURL(),
@@ -86,15 +88,16 @@ class BarclaycardEpdqHandler extends PaymentHandler {
         );
         
         // Account for the fact the phone number might not be set
-        if($order->PhoneNumber)
+        if ($order->PhoneNumber) {
             $data["OWNERTELNO"] = $order->PhoneNumber;
+        }
 
         $fields = FieldList::create();
         
         ksort($data);
         
         // Generate our SHA Key and add fields
-        foreach($data as $k => $v) {
+        foreach ($data as $k => $v) {
             $fields->push(HiddenField::create($k, null, $v));
             $sha_data .= sprintf("%s=%s%s", $k, $v, $pw);
         }
@@ -105,20 +108,20 @@ class BarclaycardEpdqHandler extends PaymentHandler {
         $fields->push(HiddenField::create("SHASign", null, $hashed_data));
 
         $actions = FieldList::create(
-            LiteralField::create('BackButton','<a href="' . $back_url . '" class="btn btn-red checkout-action-back">' . _t('Checkout.Back','Back') . '</a>'),
-            FormAction::create('Submit', _t('Checkout.ConfirmPay','Confirm and Pay'))
+            LiteralField::create('BackButton', '<a href="' . $back_url . '" class="btn btn-red checkout-action-back">' . _t('Checkout.Back', 'Back') . '</a>'),
+            FormAction::create('Submit', _t('Checkout.ConfirmPay', 'Confirm and Pay'))
                 ->addExtraClass('btn')
                 ->addExtraClass('btn-green')
         );
 
-        $form = Form::create($this,'Form',$fields,$actions)
+        $form = Form::create($this, 'Form', $fields, $actions)
             ->addExtraClass('forms')
             ->setFormMethod('POST')
             ->setFormAction($gateway_url);
         
         $this->customise(array(
-            "Title"     => _t('Checkout.Summary',"Summary"),
-            "MetaTitle" => _t('Checkout.Summary',"Summary"),
+            "Title"     => _t('Checkout.Summary', "Summary"),
+            "MetaTitle" => _t('Checkout.Summary', "Summary"),
             "Form"      => $form,
             "Order"     => $order
         ));
@@ -137,8 +140,8 @@ class BarclaycardEpdqHandler extends PaymentHandler {
     /**
      * Retrieve and process order data from the request
      */
-    public function callback($request) {
-        
+    public function callback($request)
+    {
         $this->extend('onBeforeCallback');
         
         $post_data = $this->request->postVars();
@@ -149,7 +152,7 @@ class BarclaycardEpdqHandler extends PaymentHandler {
         $payment_id = 0;
 
         // Check if CallBack data exists and install id matches the saved ID
-        if(
+        if (
             isset($data) && // Data and order are set
             array_key_exists('STATUS', $data) &&
             array_key_exists('orderID', $data) &&
@@ -158,7 +161,7 @@ class BarclaycardEpdqHandler extends PaymentHandler {
             $order_id = $data['orderID'];
             $payment_id = $data['PAYID'];
             
-            switch($data['STATUS']){
+            switch ($data['STATUS']) {
                 case "5":
                     $status = "paid";
                     break;
@@ -193,8 +196,9 @@ class BarclaycardEpdqHandler extends PaymentHandler {
                     $status = "failed";
                     break;
             }
-        } else
+        } else {
             return $this->httpError(500);
+        }
         
         $payment_data = ArrayData::array_to_object(array(
             "OrderID" => $order_id,
@@ -210,5 +214,4 @@ class BarclaycardEpdqHandler extends PaymentHandler {
         
         return;
     }
-
 }

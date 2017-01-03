@@ -1,12 +1,14 @@
 <?php
 
-class BarclaycardEpdqDynamicTemplate extends Controller {
+class BarclaycardEpdqDynamicTemplate extends Controller
+{
     
     private static $allowed_actions = array(
         "index"
     );
     
-    public function index() {
+    public function index()
+    {
         $config = SiteConfig::current_site_config();
         
         return $this
